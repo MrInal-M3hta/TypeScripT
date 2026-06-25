@@ -111,3 +111,134 @@ function orderChai(teaType:TeaType) {
 }
 
 orderChai("Ginger")
+
+
+// =========================================================================
+// Interface with a class
+// =========================================================================
+
+interface Alcohol {
+    name: string;
+    type: string;
+    alcoholPercentage: number;
+
+    showInfo(): void;
+}
+
+class Drink implements Alcohol {
+    constructor(
+        public name: string,
+        public type: string,
+        public alcoholPercentage: number
+    ){}
+
+    showInfo(): void {
+        console.log(`${this.name} is a ${this.type} with ${this.alcoholPercentage}% alcohol`)
+    }
+}
+
+const vodka = new Drink("Smirnoff", "Vodka", 40)
+vodka.showInfo();
+
+// =========================================================================
+// Interface with Function 
+// =========================================================================
+
+interface BuyAlchol {
+    (name: string, quantity: number): string 
+}
+
+const order: BuyAlchol = (name, quantity) =>{
+    return `You order ${quantity} bottles of ${name}`
+}
+
+console.log(order("Old Monk", 2))
+
+// =========================================================================
+// Interface + Function + Extends Together
+// =========================================================================
+
+interface Alcoholl {
+    name: string;
+    type: string;
+}
+
+interface PremiumAlcohol extends Alcoholl {
+    Price: number
+}
+
+interface ShowDetails {
+    (drink: PremiumAlcohol): void
+}
+
+const details: ShowDetails = (drink) => {
+    console.log(`${drink.name} is a ${drink.type}. Price: ${drink.Price}`)
+}
+
+details({
+    name: "Chivas Regal",
+    type: "Whiskey",
+    Price: 4500
+})
+
+// =========================================================================
+// Example of interface
+// =========================================================================
+
+interface BeerMachine {
+    start(): void;
+    stop(): void;
+    (price: number): number;
+}
+
+// 1. Create the main function execution block
+const beermachine = function (price: number): number {
+    console.log(`Processing payment of $${price}`);
+    return price;
+} as BeerMachine; // Cast it to the interface
+
+// 2. Attach the object methods to the function
+beermachine.start = function() {
+    console.log("Machine is starting till Mug is filling");
+};
+
+beermachine.stop = function() {
+    console.log("Mug is completely filled machine was stopped!");
+};
+
+// 3. Testing all parts of the hybrid interface
+beermachine.start();
+beermachine.stop();
+
+const changes = beermachine(5); // Calling the object directly as a function
+console.log(`Change returned: $${changes}`);
+
+
+// -------------------------- Other Way ------------------------->>>
+
+
+// 1. Define the standalone properties/methods first
+const machineMethods = {
+    start() {
+        console.log("Machine is starting till Mug is filling");
+    },
+    stop() {
+        console.log("Mug is completely filled machine was stopped!");
+    }
+};
+
+// 2. Define the base function
+function baseMachine(price: number): number {
+    console.log(`Processing payment of $${price}`);
+    return price;
+}
+
+// 3. Merge them safely using Object.assign
+// TypeScript automatically infers this combined type perfectly without any 'as' casting!
+const machine: BeerMachine = Object.assign(baseMachine, machineMethods);
+
+// 4. Test execution
+machine.start();
+machine.stop();
+const change = machine(5);
+console.log(`Change returned: $${change}`);
